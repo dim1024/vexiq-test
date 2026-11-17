@@ -7,7 +7,7 @@ if (window.VEXMapper) return;
 const VERSION = '2026-11-17.6';
 const POLL = new Uint8Array([0xc9,0x36,0xb8,0x47,0x58,0x60,0x00,0x10,0x53]);
 const BUTTONS = {'E ↑':[13,8],'E ↓':[13,2],'F ↑':[13,4],'F ↓':[13,1],'L ↑':[13,32],'L ↓':[13,16],'R ↑':[13,128],'R ↓':[13,64],L3:[14,1],R3:[14,2]};
-const defaults = {'Left ↑':'w','Left ↓':'s','Left ←':'a','Left →':'d','E ↑':'j','E ↓':'q','F ↑':'r','F ↓':'f','L ↑':'e','L ↓':'c','R ↑':'v','R ↓':'1',L3:'p',R3:'k','Right ↑':'none','Right ↓':'none','Right ←':'none','Right →':'none','Right aim':'mouse-move','Mouse speed':0.30};
+const defaults = {'Left ↑':'w','Left ↓':'s','Left ←':'a','Left →':'d','E ↑':'j','E ↓':'q','F ↑':'r','F ↓':'f','L ↑':'e','L ↓':'c','R ↑':'v','R ↓':'1',L3:'p',R3:'k','Right ↑':'none','Right ↓':'none','Right ←':'none','Right →':'none','Right aim':'mouse-move','Mouse speed':2.00};
 const storageKey = 'vex-mapper:' + location.origin + location.pathname;
 let mapping = {...defaults};
 try { Object.assign(mapping, JSON.parse(localStorage.getItem(storageKey)||'{}')); } catch(e) {}
@@ -682,7 +682,7 @@ button:disabled{opacity:.45;cursor:default}
 
   node(
     'div','help',
-    'Default: 1.00. Adjust while testing aim in the game.',
+    'Default: 2.00. Adjust while testing aim in the game.',
     dialog
   );
 
