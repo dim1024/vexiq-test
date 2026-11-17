@@ -2306,7 +2306,13 @@ updateHUD();
 loop();
 </script>
  
-<script src="./vex-controller.js?v=2026-11-17.4"></script>
+<script>
+(function () {
+  var script = document.createElement("script");
+  script.src = "./vex-controller.js?v=" + Date.now();
+  document.body.appendChild(script);
+})();
+</script>
 
 </body>
 </html>
