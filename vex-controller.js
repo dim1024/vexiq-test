@@ -669,9 +669,9 @@ button:disabled{opacity:.45;cursor:default}
 
   slider=node('input','speed',null,dialog);
   slider.type='range';
-  slider.min='0.05';
-  slider.max='1.50';
-  slider.step='0.05';
+  slider.min='0.5';
+  slider.max='3.50';
+  slider.step='0.10';
   slider.value=String(mapping['Mouse speed']);
 
   slider.oninput=()=>{
@@ -682,7 +682,7 @@ button:disabled{opacity:.45;cursor:default}
 
   node(
     'div','help',
-    'Default: 0.30. Adjust while testing aim in the game.',
+    'Default: 1.00. Adjust while testing aim in the game.',
     dialog
   );
 
