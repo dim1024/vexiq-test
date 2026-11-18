@@ -3,11 +3,42 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="build" content="2026-11-17.3">
+<meta name="build" content="2026-11-16.1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<!-- Version checks for HTML and VEX controller are handled by the loader before </body>. -->
+<!-- Bump the <meta name="build"> content to any new string on every deploy so cached clients auto-reload once. -->
+<script>
+(function () {
+ try {
+  if (location.protocol === "file:") return;
+  var meta = document.querySelector('meta[name="build"]');
+  if (!meta) return;
+  var localBuild = meta.getAttribute("content");
+  if (!localBuild) return;
+
+  var cleanUrl = location.origin + location.pathname;
+  fetch(cleanUrl + "?_v=" + Date.now(), { cache: "no-store" })
+   .then(function (res) {
+    if (!res.ok) return null;
+    return res.text();
+   })
+   .then(function (html) {
+    if (!html) return;
+    var match = html.match(/<meta\s+name=["']build["']\s+content=["']([^"']+)["']/i);
+    if (!match) return;
+    var remoteBuild = match[1];
+    if (remoteBuild && remoteBuild !== localBuild) {
+     var key = "rotd_reloaded_build";
+     if (sessionStorage.getItem(key) === remoteBuild) return;
+     sessionStorage.setItem(key, remoteBuild);
+     location.replace(cleanUrl + "?_v=" + Date.now());
+    }
+   })
+   .catch(function () {});
+ } catch (e) {}
+})();
+</script>
 <title>REALMS OF THE DEEP</title>
 
 <style>
@@ -2274,64 +2305,14 @@ renderStats();
 updateHUD();
 loop();
 </script>
- 
-<script>
-/* VEX + HTML update loader: install once, no manual JS version changes. */
-(async function () {
-  if (location.protocol === 'file:') {
-    console.warn('VEX: Use GitHub Pages (HTTPS) for USB connection.');
-    return;
-  }
-  const pageUrl = new URL(location.pathname, location.origin);
-  const jsUrl = new URL('./vex-controller.js', pageUrl);
-  const nonce = Date.now();
-  const htmlBuild = document.querySelector('meta[name="build"]')?.content || '';
-  try {
-    // Compare the deployed index.html with the HTML currently in the browser.
-    const htmlResponse = await fetch(pageUrl.href + '?_check=' + nonce, {
-      cache: 'no-store'
-    });
-    if (htmlResponse.ok) {
-      const remoteHTML = await htmlResponse.text();
-      const version = remoteHTML.match(
-        /<meta\s+name=["']build["']\s+content=["']([^"']+)["']/i
-      )?.[1];
-      if (version && htmlBuild && version !== htmlBuild) {
-        const retryKey = 'vex-html-reloaded:' + pageUrl.pathname;
-        if (sessionStorage.getItem(retryKey) !== version) {
-          sessionStorage.setItem(retryKey, version);
-          location.replace(pageUrl.href + '?_refresh=' + Date.now());
-          return;
-        }
-        console.warn('VEX: New HTML build available but reload already attempted:', version);
-      }
-    }
-  } catch (error) {
-    console.warn('VEX: HTML update check failed:', error);
-  }
-
-  // Always retrieve the current controller JS, independently of the HTML build.
-  // Cache busting here means future JS updates do not require touching index.html.
-  try {
-    const jsResponse = await fetch(jsUrl.href + '?_check=' + Date.now(), {
-      cache: 'no-store'
-    });
-    if (!jsResponse.ok) throw new Error('HTTP ' + jsResponse.status);
-    const jsText = await jsResponse.text();
-    const jsBuild =
-      jsText.match(/\/\*\s*VEX_BUILD:\s*([\w.-]+)\s*\*\//)?.[1] ||
-      jsText.match(/\b(?:const|var|let)\s+VERSION\s*=\s*["']([^"']+)["']/)?.[1] ||
-      'unversioned';
-
-    const script = document.createElement('script');
-    script.src = jsUrl.href + '?v=' + encodeURIComponent(jsBuild) + '&_fresh=' + Date.now();
-    script.onerror = () => console.error('VEX: Could not load controller script.');
-    document.body.appendChild(script);
-  } catch (error) {
-    console.error('VEX: Controller update check failed:', error);
-  }
+ <script>
+(function () {
+  const script = document.createElement("script");
+  script.src =
+    "https://dim1024.github.io/VexIQ-Adapter/vex-controller.js?v=" +
+    Date.now();
+  document.body.appendChild(script);
 })();
 </script>
-
 </body>
 </html>
